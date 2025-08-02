@@ -1,68 +1,19 @@
-"use client";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useState } from "react";
-import { createAuthClient } from "better-auth/react"
-import { authClient } from "@/lib/aut-client";
+import { auth } from "@/lib/auth";
+import { HomeView } from "@/modules/home/ui/views/home-view"
+import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 
 
-export default function Home() {
+const Page = async () => {
+    const session = await auth.api.getSession({
+        headers: await headers(),
+    });
 
-    const {data: session} = authClient.useSession();
-
-    
-    const [email, setEmail] = useState("");
-    const [name, setName] = useState("");
-    const [password, setPassword] = useState("");
-
-
-
-    const onSubmit = () => {
-        authClient.signUp.email({
-            email,
-            name,
-            password,
-        }, {
-            onError: () => {
-                window.alert("Something went wrong");
-
-            },
-            onSuccess: () => {
-                window.alert("Successed");
-            }
-        });
+    if(!session){
+        redirect("/sign-in");
     }
 
-    if(session) {
-        return (
-           <div className="flex flex-col gap-4">
-            <p>Logged in as {session.user.name}</p>
-            <Button onClick={() => authClient.signOut()}>
-                Sign Out
-            </Button>
-           </div>
-        );
-    }
-
-
-    return (
-        <div className="flex flex-col gap-4">
-            <Input
-            placeholder="name"
-            value={name} onChange={(e) => setName(e.target.value)}
-            />
-            <Input
-            placeholder="email"
-            value={email} onChange={(e) => setEmail(e.target.value)}
-            />
-            <Input
-            placeholder="password"
-            value={password} onChange={(e) => setPassword(e.target.value)}
-            />
-            <Button onClick={onSubmit}>
-                Create user
-            </Button>
-        </div>
-    )
-
+    return <HomeView />
 }
+
+export default Page;
