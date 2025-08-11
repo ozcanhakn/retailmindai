@@ -1,5 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation"; // Router'ı import et
+import { authClient } from "@/lib/aut-client"; // Doğru import path
 import { 
     Search, 
     Bell, 
@@ -35,16 +37,11 @@ import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 
-
 interface DashboardNavbarProps {
     onMenuClick?: () => void;
     breadcrumbs?: { label: string; href?: string }[];
     currentPlan?: "starter" | "professional" | "business" | "enterprise";
-    user?: {
-        name: string;
-        email: string;
-        avatar?: string;
-    };
+    // user prop'unu kaldırdık çünkü session'dan alacağız
 }
 
 const mockNotifications = [
@@ -104,18 +101,16 @@ const planLimits = {
 export const DashboardNavbar = ({ 
     onMenuClick, 
     breadcrumbs = [{ label: "Dashboard" }],
-    currentPlan = "professional",
-    user = { name: "John Doe", email: "john@example.com" }
+    currentPlan = "professional"
 }: DashboardNavbarProps) => {
+    // Tüm hook'ları önce çağır
+    const { data: session } = authClient.useSession();
+    const router = useRouter(); // Router hook'unu ekle
     const [searchQuery, setSearchQuery] = useState("");
     const [aiStatus, setAiStatus] = useState<"online" | "processing" | "offline" | "high-load">("online");
     const [unreadNotifications, setUnreadNotifications] = useState(2);
     
-    const currentLimits = planLimits[currentPlan];
-    const apiUsagePercent = (currentLimits.apiCalls / currentLimits.maxApiCalls) * 100;
-    const storageUsagePercent = (currentLimits.storage / currentLimits.maxStorage) * 100;
-
-    // Simulate AI status changes
+    // useEffect'i de hook'lar bölümünde çağır
     useEffect(() => {
         const interval = setInterval(() => {
             const statuses: Array<typeof aiStatus> = ["online", "processing", "online", "high-load"];
@@ -125,6 +120,44 @@ export const DashboardNavbar = ({
 
         return () => clearInterval(interval);
     }, []);
+
+    // Logout function'ı ekle
+    const handleSignOut = async () => {
+        try {
+            await authClient.signOut({
+                fetchOptions: {
+                    onSuccess: () => {
+                        router.push("/sign-in");
+                    }
+                }
+            });
+        } catch (error) {
+            console.error("Sign out error:", error);
+            // Hata durumunda da yönlendir
+            router.push("/sign-in");
+        }
+    };
+    
+    // Early return'ü hook'lardan sonra yap
+    if (!session) {
+        return (
+            <nav className="bg-gray-900 border-b border-gray-800 px-4 py-3">
+                <div className="flex items-center justify-center">
+                    <div className="text-gray-400">Loading...</div>
+                </div>
+            </nav>
+        );
+    }
+
+    const user = {
+        name: session.user.name || "User",
+        email: session.user.email || "",
+        avatar: undefined // Avatar şimdilik yok, initials kullanacağız
+    };
+    
+    const currentLimits = planLimits[currentPlan];
+    const apiUsagePercent = (currentLimits.apiCalls / currentLimits.maxApiCalls) * 100;
+    const storageUsagePercent = (currentLimits.storage / currentLimits.maxStorage) * 100;
 
     const getAIStatusText = () => {
         switch (aiStatus) {
@@ -299,7 +332,10 @@ export const DashboardNavbar = ({
                                 <Avatar className="h-8 w-8">
                                     <AvatarImage src={user.avatar} alt={user.name} />
                                     <AvatarFallback className="bg-gray-700 text-white">
-                                        {user.name.split(' ').map(n => n[0]).join('')}
+                                        {user.name ? 
+                                            user.name.split(' ').map(n => n[0]).join('').toUpperCase() 
+                                            : 'U'
+                                        }
                                     </AvatarFallback>
                                 </Avatar>
                             </Button>
@@ -336,7 +372,10 @@ export const DashboardNavbar = ({
                                 Help & Support
                             </DropdownMenuItem>
                             <DropdownMenuSeparator className="bg-gray-700" />
-                            <DropdownMenuItem className="text-red-400 hover:text-red-300 hover:bg-gray-700">
+                            <DropdownMenuItem 
+                                className="text-red-400 hover:text-red-300 hover:bg-gray-700 cursor-pointer"
+                                onClick={handleSignOut}
+                            >
                                 <LogOut className="mr-2 h-4 w-4" />
                                 Sign Out
                             </DropdownMenuItem>
