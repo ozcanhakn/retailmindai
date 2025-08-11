@@ -67,7 +67,7 @@ const dataSection = [
     {
         icon: Upload,
         label: "Upload Center",
-        href: "/dashboard/upload",
+        href: "/upload",
     },
     {
         icon: Database,
