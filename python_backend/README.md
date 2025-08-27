@@ -56,3 +56,4 @@ print(response.json())
 
 Backend varsayılan olarak `http://localhost:8000` adresinde çalışır.
 
+

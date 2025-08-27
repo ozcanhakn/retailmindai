@@ -20,7 +20,7 @@ export const UploadView: React.FC = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isCreatingWorkspace, setIsCreatingWorkspace] = useState(false);
 
-  const generateId = () => Math.random().toString(36).substr(2, 9);
+  const generateId = () => `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
   const handleFileSelect = useCallback((files: FileList | File[]) => {
     const { validFiles, invalidFiles } = FileValidator.validateFileList(files);
@@ -50,7 +50,7 @@ export const UploadView: React.FC = () => {
     });
   }, []);
 
-  const processFile = async (fileId: string) => {
+  const processFile = useCallback(async (fileId: string) => {
     const updateFileStatus = (
       status: UploadFile['status'], 
       progress: number, 
@@ -106,15 +106,15 @@ export const UploadView: React.FC = () => {
     } finally {
       setIsProcessing(false);
     }
-  };
+  }, []);
 
-  const removeFile = (fileId: string) => {
+  const removeFile = useCallback((fileId: string) => {
     setUploadedFiles(prev => prev.filter(f => f.id !== fileId));
-  };
+  }, []);
 
-  const clearAllFiles = () => {
+  const clearAllFiles = useCallback(() => {
     setUploadedFiles([]);
-  };
+  }, []);
 
   const handleStartAnalysis = async () => {
     try {
@@ -186,14 +186,14 @@ export const UploadView: React.FC = () => {
   const canStartAnalysis = uploadedFiles.some(f => f.status === 'completed');
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
+    <div className="min-h-screen p-6" style={{ backgroundColor: '#1A1F2B' }}>
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Header */}
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl font-bold mb-2" style={{ color: '#B4C2DC' }}>
             Veri Upload Center
           </h1>
-          <p className="text-gray-600">
+          <p className="text-lg leading-relaxed" style={{ color: '#B4C2DC' }}>
             CSV veya Excel dosyalarınızı yükleyin ve analize başlayın. 
             Sistem otomatik olarak verilerinizi işleyecek ve analiz için hazırlayacaktır.
           </p>
@@ -201,17 +201,19 @@ export const UploadView: React.FC = () => {
 
         {/* Upload Stats */}
         {uploadedFiles.length > 0 && (
-          <UploadStatsComponent stats={getUploadStats()} />
+          <div key="upload-stats">
+            <UploadStatsComponent stats={getUploadStats()} />
+          </div>
         )}
 
         {/* Upload Area */}
-        <Card>
+        <Card style={{ backgroundColor: '#292E3B', borderColor: '#3a4050' }}>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2" style={{ color: '#B4C2DC' }}>
               <Upload className="w-5 h-5" />
               Dosya Yükleme
             </CardTitle>
-            <CardDescription>
+            <CardDescription style={{ color: '#B4C2DC' }}>
               Desteklenen formatlar: CSV, Excel (.xlsx, .xls) • Maksimum boyut: 50MB
             </CardDescription>
           </CardHeader>
@@ -222,14 +224,14 @@ export const UploadView: React.FC = () => {
 
         {/* File List */}
         {uploadedFiles.length > 0 && (
-          <Card>
+          <Card key="file-list" style={{ backgroundColor: '#292E3B', borderColor: '#3a4050' }}>
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle>
+                  <CardTitle style={{ color: '#B4C2DC' }}>
                     Yüklenen Dosyalar ({uploadedFiles.length})
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription style={{ color: '#B4C2DC' }}>
                     Dosyalarınızın yükleme ve işleme durumu
                   </CardDescription>
                 </div>
@@ -237,6 +239,8 @@ export const UploadView: React.FC = () => {
                   variant="outline" 
                   onClick={clearAllFiles}
                   disabled={isProcessing}
+                  className="border-gray-600 hover:bg-gray-700"
+                  style={{ color: '#B4C2DC', borderColor: '#3a4050' }}
                 >
                   Tümünü Temizle
                 </Button>
@@ -253,31 +257,30 @@ export const UploadView: React.FC = () => {
 
         {/* Action Section */}
         {canStartAnalysis && (
-          <Card>
+          <Card key="action-section" style={{ backgroundColor: '#292E3B', borderColor: '#3a4050' }}>
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <CheckCircle className="w-5 h-5 text-green-500" />
-                  <span className="text-sm text-gray-600">
+                  <span className="text-sm" style={{ color: '#B4C2DC' }}>
                     {uploadedFiles.filter(f => f.status === 'completed').length} dosya analiz için hazır
                   </span>
                 </div>
                 <Button 
-                  className="bg-green-600 hover:bg-green-700"
+                  className="bg-green-600 hover:bg-green-700 text-white"
                   onClick={handleStartAnalysis}
                   disabled={isCreatingWorkspace}
                 >
-                  {isCreatingWorkspace ? (
-                    <>
+                  <div className="flex items-center">
+                    {isCreatingWorkspace ? (
                       <div className="w-4 h-4 mr-2 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                      Workspace Oluşturuluyor...
-                    </>
-                  ) : (
-                    <>
+                    ) : (
                       <Table className="w-4 h-4 mr-2" />
-                      Analize Başla
-                    </>
-                  )}
+                    )}
+                    <span>
+                      {isCreatingWorkspace ? 'Workspace Oluşturuluyor...' : 'Analize Başla'}
+                    </span>
+                  </div>
                 </Button>
               </div>
             </CardContent>
@@ -286,37 +289,37 @@ export const UploadView: React.FC = () => {
 
         {/* Info Cards */}
         <div className="grid md:grid-cols-3 gap-6">
-          <Card>
+          <Card style={{ backgroundColor: '#292E3B', borderColor: '#3a4050' }}>
             <CardContent className="pt-6">
               <div className="flex items-center mb-3">
                 <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
-                <h4 className="font-semibold text-gray-900">Otomatik Veri Temizleme</h4>
+                <h4 className="font-semibold" style={{ color: '#B4C2DC' }}>Otomatik Veri Temizleme</h4>
               </div>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm" style={{ color: '#B4C2DC' }}>
                 Sistem verilerinizi otomatik olarak temizler, boşlukları doldurur ve analiz için optimize eder.
               </p>
             </CardContent>
           </Card>
           
-          <Card>
+          <Card style={{ backgroundColor: '#292E3B', borderColor: '#3a4050' }}>
             <CardContent className="pt-6">
               <div className="flex items-center mb-3">
                 <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                <h4 className="font-semibold text-gray-900">Kapsamlı Analiz</h4>
+                <h4 className="font-semibold" style={{ color: '#B4C2DC' }}>Kapsamlı Analiz</h4>
               </div>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm" style={{ color: '#B4C2DC' }}>
                 Mağaza, ürün, müşteri ve zaman bazlı analizler ile detaylı istatistikler elde edin.
               </p>
             </CardContent>
           </Card>
           
-          <Card>
+          <Card style={{ backgroundColor: '#292E3B', borderColor: '#3a4050' }}>
             <CardContent className="pt-6">
               <div className="flex items-center mb-3">
                 <div className="w-2 h-2 bg-purple-500 rounded-full mr-3"></div>
-                <h4 className="font-semibold text-gray-900">AI Chatbot Desteği</h4>
+                <h4 className="font-semibold" style={{ color: '#B4C2DC' }}>AI Chatbot Desteği</h4>
               </div>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm" style={{ color: '#B4C2DC' }}>
                 Verileriniz hakkında soru sorun ve AI destekli öneriler alın.
               </p>
             </CardContent>

@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
+import { useState } from 'react';
 import {
     Sidebar,
     SidebarContent,
@@ -36,15 +37,22 @@ import {
     Presentation,
     Download,
     Clock,
-    BookOpen
+    BookOpen,
+    Crown
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { UpgradePlanModal } from '@/components/pricing/upgrade-plan-modal';
 
 const workspaceSection = [
     {
         icon: Activity,
         label: "Dashboard",
         href: "/dashboard",
+    },
+    {
+        icon: BarChart3,
+        label: "KPI Dashboard",
+        href: "/dashboard/kpi-dashboard",
     },
     {
         icon: FileText,
@@ -164,6 +172,13 @@ const upgradeSection = [
 ];
 
 export const DashboardSidebar = () => {
+    const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
+    const [currentPlan] = useState('free'); // This would come from user context/state
+
+    const handleUpgradeClick = (e: React.MouseEvent) => {
+        e.preventDefault();
+        setIsUpgradeModalOpen(true);
+    };
     return (
         <Sidebar className="bg-black border-r border-gray-800">
             <SidebarHeader className="bg-black border-b border-gray-800">
@@ -192,6 +207,11 @@ export const DashboardSidebar = () => {
                                         <Link href={item.href} className="flex items-center gap-3 px-4 py-3">
                                             <item.icon className="h-5 w-5" />
                                             <span className="text-sm font-medium">{item.label}</span>
+                                            {item.label === 'Recent Analysis' && (
+                                                <div className="ml-auto">
+                                                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" />
+                                                </div>
+                                            )}
                                         </Link>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>
@@ -351,21 +371,34 @@ export const DashboardSidebar = () => {
 
             <SidebarFooter className="bg-black border-t border-gray-800">
                 <SidebarMenu>
-                    {upgradeSection.map((item) => (
-                        <SidebarMenuItem key={item.href}>
-                            <SidebarMenuButton 
-                                asChild 
-                                className="text-yellow-400 hover:text-yellow-300 hover:bg-gray-800 transition-colors"
-                            >
-                                <Link href={item.href} className="flex items-center gap-3 px-4 py-3">
-                                    <item.icon className="h-5 w-5" />
-                                    <span className="text-sm font-medium">{item.label}</span>
-                                </Link>
-                            </SidebarMenuButton>
-                        </SidebarMenuItem>
-                    ))}
+                    <SidebarMenuItem>
+                        <SidebarMenuButton 
+                            onClick={handleUpgradeClick}
+                            className="text-yellow-400 hover:text-yellow-300 hover:bg-gradient-to-r hover:from-yellow-900/30 hover:to-orange-900/30 transition-all duration-300 group"
+                        >
+                            <div className="flex items-center gap-3 px-4 py-3 w-full">
+                                <div className="relative">
+                                    <Crown className="h-5 w-5" />
+                                    <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full animate-pulse" />
+                                </div>
+                                <span className="text-sm font-medium">Upgrade Plan</span>
+                                <div className="ml-auto">
+                                    <div className="px-2 py-1 bg-gradient-to-r from-yellow-400 to-orange-400 text-black text-xs font-bold rounded-full">
+                                        PRO
+                                    </div>
+                                </div>
+                            </div>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarFooter>
+            
+            {/* Upgrade Plan Modal */}
+            <UpgradePlanModal 
+                isOpen={isUpgradeModalOpen}
+                onClose={() => setIsUpgradeModalOpen(false)}
+                currentPlanId={currentPlan}
+            />
         </Sidebar>
     );
 };

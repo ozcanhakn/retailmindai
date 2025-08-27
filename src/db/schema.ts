@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, boolean, integer, jsonb ,uuid } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean, integer, jsonb, uuid, bigint } from "drizzle-orm/pg-core";
 
 
 export const user = pgTable("user", {
@@ -52,5 +52,41 @@ export const uploadedFiles = pgTable("uploaded_files", {
   userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
   filePath: text("file_path").notNull(),
   fileName: text("file_name").notNull(),
+  // Extended metadata for end-to-end pipeline
+  sizeBytes: bigint("size_bytes", { mode: "number" }),
+  status: text("status"), // pending/uploaded/processing/completed/failed
+  schemaHash: text("schema_hash"),
+  columns: jsonb("columns"),
+  rowCount: integer("row_count"),
+  error: text("error"),
+  createdAt: timestamp("created_at").$defaultFn(() => new Date()).notNull(),
+});
+
+// Stores individual analysis results per file.
+export const analysisResults = pgTable("analysis_results", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  fileId: uuid("file_id").notNull().references(() => uploadedFiles.id, { onDelete: "cascade" }),
+  analysisType: text("analysis_type").notNull(),
+  resultJson: jsonb("result_json").notNull(),
+  createdAt: timestamp("created_at").$defaultFn(() => new Date()).notNull(),
+});
+
+// Text chunks derived from analysis summaries and data preview rows
+export const chunks = pgTable("chunks", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  fileId: uuid("file_id").notNull().references(() => uploadedFiles.id, { onDelete: "cascade" }),
+  chunkText: text("chunk_text").notNull(),
+  chunkType: text("chunk_type").notNull(), // analysis | row
+  source: text("source"),
+  createdAt: timestamp("created_at").$defaultFn(() => new Date()).notNull(),
+});
+
+// Embeddings for chunks; vector stored as JSON array for simplicity
+export const embeddings = pgTable("embeddings", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  fileId: uuid("file_id").notNull().references(() => uploadedFiles.id, { onDelete: "cascade" }),
+  chunkId: uuid("chunk_id").notNull().references(() => chunks.id, { onDelete: "cascade" }),
+  vector: jsonb("vector"),
+  vectorStore: text("vector_store"), // e.g., 'local-json', 'pg', 'pinecone'
   createdAt: timestamp("created_at").$defaultFn(() => new Date()).notNull(),
 });

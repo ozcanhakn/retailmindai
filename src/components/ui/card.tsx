@@ -2,14 +2,23 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-function Card({ className, ...props }: React.ComponentProps<"div">) {
+function Card({ className, style, variant, ...props }: React.ComponentProps<"div"> & { variant?: 'default' | 'stats' }) {
+  const isStatsCard = variant === 'stats';
+  
   return (
     <div
       data-slot="card"
       className={cn(
-        "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm",
+        "flex flex-col gap-6 rounded-xl border py-6 shadow-sm",
+        isStatsCard && "theme-stats-box",
         className
       )}
+      style={{
+        backgroundColor: isStatsCard ? 'var(--stats-box-bg)' : 'var(--bg-100)',
+        borderColor: 'var(--bg-300)',
+        color: isStatsCard ? 'var(--stats-text)' : 'var(--text-100)',
+        ...style
+      }}
       {...props}
     />
   )
@@ -38,11 +47,15 @@ function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
-function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
+function CardDescription({ className, style, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card-description"
-      className={cn("text-muted-foreground text-sm", className)}
+      className={cn("text-sm", className)}
+      style={{
+        color: 'var(--text-200)',
+        ...style
+      }}
       {...props}
     />
   )

@@ -1,3 +1,4 @@
+// src/modules/analyze/utils/analyze-service.tsx
 import { 
   Workspace, 
   AnalysisSummary, 
@@ -70,7 +71,7 @@ export class AnalyzeService {
       console.error('Get workspace error:', error);
       return {
         success: false,
-        error: 'Workspace yükleme hatası'
+        error: 'Workspace yÃ¼kleme hatasÄ±'
       };
     }
   }
@@ -90,7 +91,7 @@ export class AnalyzeService {
       console.error('Delete workspace error:', error);
       return {
         success: false,
-        error: 'Workspace silme hatası'
+        error: 'Workspace silme hatasÄ±'
       };
     }
   }
@@ -124,7 +125,7 @@ export class AnalyzeService {
       console.error('Analysis summary error:', error);
       return {
         success: false,
-        error: 'Analiz özeti yükleme hatası'
+        error: 'Analiz Ã¶zeti yÃ¼kleme hatasÄ±'
       };
     }
   }
@@ -154,7 +155,7 @@ export class AnalyzeService {
       console.error('Sales analysis error:', error);
       return {
         success: false,
-        error: 'Satış analizi yükleme hatası'
+        error: 'SatÄ±ÅŸ analizi yÃ¼kleme hatasÄ±'
       };
     }
   }
@@ -183,7 +184,7 @@ export class AnalyzeService {
       console.error('Product analysis error:', error);
       return {
         success: false,
-        error: 'Ürün analizi yükleme hatası'
+        error: 'ÃœrÃ¼n analizi yÃ¼kleme hatasÄ±'
       };
     }
   }
@@ -213,7 +214,7 @@ export class AnalyzeService {
       console.error('Customer analysis error:', error);
       return {
         success: false,
-        error: 'Müşteri analizi yükleme hatası'
+        error: 'MÃ¼ÅŸteri analizi yÃ¼kleme hatasÄ±'
       };
     }
   }
@@ -242,7 +243,7 @@ export class AnalyzeService {
       console.error('Region analysis error:', error);
       return {
         success: false,
-        error: 'Bölge analizi yükleme hatası'
+        error: 'BÃ¶lge analizi yÃ¼kleme hatasÄ±'
       };
     }
   }
@@ -271,7 +272,7 @@ export class AnalyzeService {
       console.error('Stock analysis error:', error);
       return {
         success: false,
-        error: 'Stok analizi yükleme hatası'
+        error: 'Stok analizi yÃ¼kleme hatasÄ±'
       };
     }
   }
