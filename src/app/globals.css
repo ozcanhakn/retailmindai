@@ -76,6 +76,26 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* Custom theme variables - Light Mode (default) */
+  --primary-100: #bb2649;
+  --primary-200: #f35d74;
+  --primary-300: #ffc3d4;
+  --accent-100: #ffadad;
+  --accent-200: #ffd6a5;
+  --text-100: #4b4f5d;
+  --text-200: #6a738b;
+  --bg-100: #ffffff;
+  --bg-200: #f5f5f5;
+  --bg-300: #cccccc;
+  /* Statistics and chart colors for light mode */
+  --stats-box-bg: #292E3B;
+  --stats-text: #B4C2DC;
+  --chart-primary: #FF4D4D;
+  --chart-secondary: #FF4D4D;
+  --chart-tertiary: #FF4D4D;
+  --chart-background: #292E3B;
+  --chart-card-bg: #292E3B;
 }
 
 .dark {
@@ -110,6 +130,26 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+
+  /* Custom theme variables - Dark Mode */
+  --primary-100: #0D6E6E;
+  --primary-200: #4a9d9c;
+  --primary-300: #afffff;
+  --accent-100: #FF3D3D;
+  --accent-200: #ffe0c8;
+  --text-100: #FFFFFF;
+  --text-200: #B4C2DC;
+  --bg-100: #1A1F2B;
+  --bg-200: #292E3B;
+  --bg-300: #3a4050;
+  /* Statistics and chart colors for dark mode */
+  --stats-box-bg: #292E3B;
+  --stats-text: #B4C2DC;
+  --chart-primary: #FF4D4D;
+  --chart-secondary: #FF4D4D;
+  --chart-tertiary: #FF4D4D;
+  --chart-background: #292E3B;
+  --chart-card-bg: #292E3B;
 }
 
 @layer base {
@@ -118,5 +158,166 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* Custom theme utility classes */
+@layer utilities {
+  .theme-bg-primary {
+    background-color: var(--bg-100);
+  }
+  .theme-bg-secondary {
+    background-color: var(--bg-200);
+  }
+  .theme-bg-tertiary {
+    background-color: var(--bg-300);
+  }
+  .theme-text-primary {
+    color: var(--text-100);
+  }
+  .theme-text-secondary {
+    color: var(--text-200);
+  }
+  .theme-primary {
+    background-color: var(--primary-100);
+  }
+  .theme-primary-200 {
+    background-color: var(--primary-200);
+  }
+  .theme-primary-300 {
+    background-color: var(--primary-300);
+  }
+  .theme-accent {
+    background-color: var(--accent-100);
+  }
+  .theme-accent-200 {
+    background-color: var(--accent-200);
+  }
+  .theme-border {
+    border-color: var(--bg-300);
+  }
+  /* Statistics and chart utility classes */
+  .theme-stats-box {
+    background-color: var(--stats-box-bg);
+    color: var(--stats-text);
+  }
+  .theme-stats-text {
+    color: var(--stats-text);
+  }
+  .theme-chart-primary {
+    color: var(--chart-primary);
+  }
+  .theme-chart-secondary {
+    color: var(--chart-secondary);
+  }
+  .theme-chart-tertiary {
+    color: var(--chart-tertiary);
+  }
+}
+
+/* Global theme application */
+@layer base {
+  /* Light theme (default) */
+  .theme-light {
+    --tw-bg-opacity: 1;
+    background-color: var(--bg-100);
+    color: var(--text-100);
+  }
+  
+  .theme-light .card,
+  .theme-light [data-ui="card"] {
+    background-color: var(--bg-100);
+    border-color: var(--bg-300);
+    color: var(--text-100);
+  }
+  
+  .theme-light .sidebar,
+  .theme-light [data-ui="sidebar"] {
+    background-color: var(--bg-200);
+    border-color: var(--bg-300);
+  }
+  
+  .theme-light button:not(.btn-primary) {
+    background-color: var(--bg-200);
+    color: var(--text-100);
+    border-color: var(--bg-300);
+  }
+  
+  .theme-light .btn-primary,
+  .theme-light button[data-variant="default"] {
+    background-color: var(--primary-100);
+    color: white;
+  }
+  
+  .theme-light input,
+  .theme-light textarea,
+  .theme-light select {
+    background-color: var(--bg-100);
+    border-color: var(--bg-300);
+    color: var(--text-100);
+  }
+  
+  /* Dark theme */
+  .theme-dark {
+    --tw-bg-opacity: 1;
+    background-color: var(--bg-100);
+    color: var(--text-100);
+  }
+  
+  .theme-dark .card,
+  .theme-dark [data-ui="card"] {
+    background-color: var(--bg-200);
+    border-color: var(--bg-300);
+    color: var(--text-100);
+  }
+  
+  .theme-dark .sidebar,
+  .theme-dark [data-ui="sidebar"] {
+    background-color: var(--bg-200);
+    border-color: var(--bg-300);
+  }
+  
+  .theme-dark button:not(.btn-primary) {
+    background-color: var(--bg-300);
+    color: var(--text-100);
+    border-color: var(--bg-300);
+  }
+  
+  .theme-dark .btn-primary,
+  .theme-dark button[data-variant="default"] {
+    background-color: var(--primary-100);
+    color: var(--text-100);
+  }
+  
+  .theme-dark input,
+  .theme-dark textarea,
+  .theme-dark select {
+    background-color: var(--bg-300);
+    border-color: var(--bg-300);
+    color: var(--text-100);
+  }
+  
+  /* Navigation and UI components */
+  .theme-light nav,
+  .theme-light .navigation {
+    background-color: var(--bg-100);
+    border-color: var(--bg-300);
+  }
+  
+  .theme-dark nav,
+  .theme-dark .navigation {
+    background-color: var(--bg-200);
+    border-color: var(--bg-300);
+  }
+  
+  /* Override any conflicting Tailwind classes */
+  .theme-light main {
+    background-color: var(--bg-100) !important;
+    color: var(--text-100) !important;
+  }
+  
+  .theme-dark main {
+    background-color: var(--bg-100) !important;
+    color: var(--text-100) !important;
   }
 }

@@ -1,4 +1,5 @@
 // Workspace and Analysis Types
+// src/modules/analyze/types/index.ts
 export interface Workspace {
   id: string;
   name: string;
@@ -110,6 +111,7 @@ export interface RegionSales {
   totalSales: number;
   revenue: number;
   growth: number;
+  percentage?: number;
 }
 
 export interface CategorySales {

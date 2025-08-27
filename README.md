@@ -34,3 +34,20 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Dev setup
+
+Environment:
+- Create `.env.local` with:
+  - `DATABASE_URL`
+  - `AWS_REGION`, `AWS_S3_BUCKET`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`
+  - `OPENAI_API_KEY` (for embeddings and RAG)
+  - `REDIS_HOST`, `REDIS_PORT`, `REDIS_PASSWORD` (optional)
+
+Database:
+- Run `npm run db:push` to push Drizzle schema (creates `uploaded_files`, `analysis_results`, `chunks`, `embeddings`).
+
+Services:
+- Python backend: `cd python_backend && pip install -r requirements.txt && uvicorn main:app --reload --port 8000`
+- Next.js: `npm run dev`
+- Worker: `node -r ts-node/register src/lib/worker.ts`

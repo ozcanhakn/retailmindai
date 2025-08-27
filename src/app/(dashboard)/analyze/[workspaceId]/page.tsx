@@ -1,13 +1,12 @@
 import { AnalyzeView } from '@/modules/analyze/ui/views/analyze-view';
 
-interface AnalyzePageProps {
-  params: {
-    workspaceId: string;
-  };
+interface AnalyzePageParams {
+  workspaceId: string;
 }
 
-export default function AnalyzePage({ params }: AnalyzePageProps) {
-  return <AnalyzeView workspaceId={params.workspaceId} />;
+export default async function AnalyzePage({ params }: { params: Promise<AnalyzePageParams> }) {
+  const { workspaceId } = await params;
+  return <AnalyzeView workspaceId={workspaceId} />;
 }
 
 export const metadata = {
